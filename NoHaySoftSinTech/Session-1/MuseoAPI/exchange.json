@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "apiVersion": "v1",
+  "descriptorVersion": "1.0.0",
+  "classifier": "oas",
+  "main": "museoapiv1.yaml",
+  "assetId": "museoapiv1",
+  "groupId": "2858b0d8-4a14-459c-85f7-2445079911ac",
+  "organizationId": "2858b0d8-4a14-459c-85f7-2445079911ac",
+  "name": "MuseoAPIv1"
+}
