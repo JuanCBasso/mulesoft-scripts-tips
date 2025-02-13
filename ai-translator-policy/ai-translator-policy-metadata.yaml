@@ -1,0 +1,10 @@
+#%Policy Definition 0.1
+name: AI translator
+description: Policy para traducir respuestas un idioma a otro
+category: Security
+providedCharacteristics: []
+requiredCharacteristics: []
+interfaceScope: ["api", "resource"]
+interfaceTransformation: []
+encryptionSupported: true
+violationCategory: ""

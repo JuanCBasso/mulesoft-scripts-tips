@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:core="http://www.mulesoft.org/schema/mule/core"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
+	xmlns:http-transform="http://www.mulesoft.org/schema/mule/http-policy-transform" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+	http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+	http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+               http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
+
+<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="bf67102a-e997-42ca-a144-9a238716d332" responseTimeout="300000">
+		<http:request-connection protocol="HTTPS" host="api.openai.com" port="443" >
+			<tls:context >
+				<tls:trust-store insecure="true" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+    <http-policy:proxy name="{{{policyId}}}-custom-policy">
+        <http-policy:source>
+            <try>
+                <http-policy:execute-next/>
+                <set-variable variableName="requestPayload" value="#[payload]" />    
+                <set-variable variableName="apikey" value="#['{{ aiKey }}']" />
+                <set-variable variableName="apiURL" value="{{ apiURL }}" />
+                <set-variable variableName="attributeToTranslate" value="#['{{ payloadExpression }}']" />
+                <set-variable variableName="targetLang" value="#['{{ langExpression }}']" />
+                <set-variable variableName="aiModel" value="#['{{ aiModel }}']" />
+
+                <logger level="INFO" message="#['Translate:']" />
+                <logger level="INFO" message="#[vars.attributeToTranslate]" />
+
+                <logger level="INFO" message="#['Into Lang:']" />
+                <logger level="INFO" message="#[vars.targetLang]" />
+
+                <logger level="INFO" message="#['Model']" />
+                <logger level="INFO" message="#[vars.aiModel]" />
+
+                <ee:transform>
+                    <ee:message >
+                        <ee:set-payload ><![CDATA[  %dw 2.0
+                        output application/json
+                        ---
+                        {
+                            "model": vars.aiModel,
+                            "messages": [              
+                        {
+                            "role": "system",
+                            "content": "You are a message translator assistant. Only translate the specified field, and include it in the request with the prefix of the target language.The input is a JSON, you need to respond it with the same exact payload plus the translated attribute. Don't add any kind of header on the response, only the JSON."
+                            },
+                            {
+                            "role": "user",
+                            "content": "Translate into " ++ vars.targetLang ++ " the attribute: " ++ vars.attributeToTranslate ++  " of : " ++ write(payload,"application/json")
+                            }
+                            ]
+                        }]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <http:request method="POST" doc:name="Request" doc:id="540e38a7-46cf-4c01-8415-a0102bd6eab2" config-ref="HTTP_Request_configuration" path="/v1/chat/completions">
+                    <http:headers ><![CDATA[#[output application/java
+        ---
+        {
+            "Authorization" : vars.apikey
+        }]]]></http:headers>
+                </http:request>			
+                <ee:transform>
+                    <ee:message >
+                        <ee:set-payload ><![CDATA[%dw 2.0
+        output application/json
+        ---
+
+        read(payload.choices[0].message.content,"application/json")]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>		
+                <logger level="INFO" message="#['Translation done']" />
+                
+                <error-handler>
+					<on-error-continue logException="true">						
+						<logger level="INFO" message="#['Error with translation']" />
+                        
+                        <ee:transform>
+                            <ee:message >
+                                <ee:set-payload ><![CDATA[%dw 2.0
+                output application/json
+                ---
+                vars.requestPayload]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>		
+					</on-error-continue>
+				</error-handler>
+			</try>
+        </http-policy:source>
+    </http-policy:proxy>
+</mule>

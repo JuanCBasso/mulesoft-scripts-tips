@@ -1,0 +1,6 @@
+#%Policy Implementation 1.0
+minRuntimeVersion: 4.1.1
+supportedJavaVersions: ["8", "11", "17"]
+technology: mule4
+name: AI translator
+releaseNotes: "<some notes here>"

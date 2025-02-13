@@ -1,0 +1,45 @@
+id: AI Translator
+name: AI Translator
+description: AI translator policy
+category: Custom
+type: custom
+resourceLevelSupported: true
+encryptionSupported: false
+standalone: true
+requiredCharacteristics: []
+providedCharacteristics: []
+configuration: 
+  - propertyName: apikey
+    name: Api access key
+    description: Key para la API de AI a utilizar
+    type: string
+    allowMultiple: false
+    optional: false    
+  - propertyName: apiModel
+    name: API Model
+    description: Modelo de AI A usar
+    type: string
+    allowMultiple: false
+    optional: false    
+  - propertyName: apiURL
+    name: API URL
+    description: URL de API de AI A usar
+    type: string
+    allowMultiple: false
+    optional: false    
+  - propertyName: payloadExpression
+    name: Payload Expression
+    description: Expression para obtener el campo a traducir del Mule Message
+    type: expression
+    defaultValue: "#[payload.message]"
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: langExpression
+    name: Lang Expression
+    description: Expression para obtener el valor del idioma destino a traducir del Mule Message
+    type: expression
+    defaultValue: "#[payload.lang]"
+    optional: false
+    sensitive: false
+    allowMultiple: false

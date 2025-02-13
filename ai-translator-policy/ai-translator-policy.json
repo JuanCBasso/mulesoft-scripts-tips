@@ -1,0 +1,46 @@
+{
+    "title": "AI translator",
+    "type": "object",
+    "description": "Policy para traducir respuestas un idioma a otro",
+    "properties": {
+      "apiURL": {
+            "title": "API URL",
+            "type": "string"
+          },
+      "aiModel": {
+            "title": "AI Model",
+            "type": "string"
+          },
+      "aiKey": {
+        "title": "AI API Key",
+        "type": "string",
+        "@context": {
+          "@characteristics": [
+            "security:sensitive"
+          ]
+        }
+      },
+      "payloadExpression": {
+        "title": "Payload Expression",
+        "type": "string"
+      },
+      "langExpression": {
+        "title": "Lang Expression",
+        "type": "string"
+      }
+    },
+    "required": [
+      "apiURL",
+      "aiModel",
+      "aiKey",
+      "payloadExpression",
+      "langExpression"
+    ],
+    "unevaluatedProperties": false,
+    "@context": {
+      "@vocab": "anypoint://vocabulary/policy.yaml#",
+      "security": "anypoint://vocabulary/policy.yaml#"
+    },
+    "$id": "ai-translator",
+    "$schema": "https://json-schema.org/draft/2019-09/schema"
+  }
