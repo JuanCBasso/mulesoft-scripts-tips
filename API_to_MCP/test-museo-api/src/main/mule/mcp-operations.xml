@@ -1,0 +1,150 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd  http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+	http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+	http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd">
+  <mcp:server-config name="museo-mcp-server" serverName="museo-mcp-server" serverVersion="1.0.0">
+    <mcp:sse-server-connection listenerConfig="museoapiv1-httpListenerConfig"></mcp:sse-server-connection>
+  </mcp:server-config>
+  <flow name="mcp-server-flow">
+    <mcp:tool-listener config-ref="museo-mcp-server" name="mcp-museo-obras-general">
+      <reconnect-forever></reconnect-forever>
+      <mcp:description><![CDATA[Usa esta Tool  para obtener las obras del museo. Se puede filtrar por tema, los valores posibles son: 
+-Surrealismo
+-Tiempo
+-Postimpresionismo
+-Cielo Nocturno
+-Expresionismo
+-Angustia
+-Cubismo
+-Guerra
+-Barroco
+-Realeza
+-Renacimiento
+-Retrato
+-Religión
+-Mitología
+-Naturaleza
+-Figura Humana
+-Ukiyo-e
+]]></mcp:description>
+      <mcp:parameters-schema><![CDATA[{ 
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+  	"tema": {
+      "type": "string",
+      "description": "Nombre del tema de la obra de arte a buscar para usar de filtro"
+    }
+  },
+  "required": []
+}]]></mcp:parameters-schema>
+      <mcp:responses>
+        <mcp:text-tool-response-content text="#[payload.^raw]"/>
+      </mcp:responses>
+    </mcp:tool-listener>        
+    <set-variable doc:id="86ca62-b328bd" doc:name="Set Variable" value="#[payload.tema]" variableName="tema"></set-variable>
+    <logger doc:id="vrmtjt" doc:name="Logger" message="#[payload ]"></logger>
+    <flow-ref name="get-obras-from-db-impl"></flow-ref>
+    <ee:transform doc:id="wixeyh" doc:name="Transform Message">
+      <ee:message>
+        <ee:set-payload doc:id="oqwfef" doc:name="Set payload"><![CDATA[%dw 2.0
+      output application/json
+      var filtro= vars.tema
+---
+if(!isEmpty(filtro))
+    payload filter ($.tema contains filtro)
+else 
+    payload]]></ee:set-payload>
+      </ee:message>
+    </ee:transform>
+    <logger doc:id="abfcei" doc:name="Logger" message="#[output json --- payload]"></logger>
+  </flow>
+  <flow name="onNewSession">
+    <mcp:on-new-session-listener config-ref="museo-mcp-server"></mcp:on-new-session-listener>
+    
+    <logger doc:id="vjjdru" doc:name="Logger" message="#['Session id: $(payload.sessionId)']"></logger>
+    <logger doc:id="abcdef" doc:name="Logger" message="#['http headers:' ++  write(payload.additionalProperties)]"></logger>
+    <ee:transform doc:name="Transform" doc:id="skfvrq" >
+      <ee:variables>
+      <ee:set-variable variableName="NewVariable1" >
+        <![CDATA[%dw 2.0
+output application/java
+---
+payload.additionalProperties.authorization]]>
+      </ee:set-variable>
+    </ee:variables>  
+    </ee:transform>
+  </flow>
+  <flow name="resource-mcp-listener">
+    <mcp:resource-listener config-ref="museo-mcp-server" name="museo-resource-listener" resourceMimeType="text/plain" uri="001-plano-museo">
+      <mcp:description><![CDATA[Resource con informacion sobre el edificio del museo. Son datos que indican la forma del edificio, como estan sus pasillos compuestos. La entrada y salida y ubicación de los corredores.]]></mcp:description>
+      <mcp:resource-content>
+        <mcp:text-resource text="#[vars.response]"></mcp:text-resource>
+      </mcp:resource-content>
+    </mcp:resource-listener>
+    <ee:transform doc:id="kgufhj" doc:name="Transform Message">
+      <ee:variables>
+        <ee:set-variable variableName="response"><![CDATA[%dw 2.0
+output text/plain
+---
+"MUSEO DE ARTE MODERNO - PLANO ARQUITECTÓNICO
+
+EDIFICIO 1 - ARTE CLÁSICO Y MODERNO
+=================================
+ENTRADA PRINCIPAL: Vestíbulo central con recepción e información
+- Escaleras principales a la derecha
+- Ascensores al fondo del vestíbulo  
+- Servicios (baños, guardarropa) a la izquierda de la entrada
+
+PASILLO 1: Ala Este - Arte Surrealista
+- Longitud: 50 metros
+- Ubicación: Planta baja, acceso directo desde vestíbulo
+- Iluminación: Natural por ventanales al jardín este
+- Salida de emergencia: Extremo este hacia jardín
+
+PASILLO 2: Ala Norte - Arte Postimpresionista  
+- Longitud: 40 metros
+- Ubicación: Planta baja, conexión desde final del Pasillo 1
+- Iluminación: Mixta, luz cenital y artificial
+- Acceso: Escalera secundaria al segundo piso
+
+PASILLO 3: Ala Oeste - Arte Expresionista
+- Longitud: 45 metros  
+- Ubicación: Planta baja, paralelo al Pasillo 1
+- Iluminación: Artificial controlada para obras sensibles
+- Conexión: Corredor transversal conecta con Pasillo 1
+
+SEGUNDO PISO:
+- Pasillo 4: Sala de exposiciones temporales (30 metros)
+- Pasillo 5: Arte contemporáneo (35 metros)
+- Biblioteca y archivo del museo
+
+SERVICIOS GENERALES:
+- Cafetería: Planta baja, ala sur con terraza
+- Tienda del museo: Junto a la salida principal
+- Auditorium: Sótano, acceso por escaleras del vestíbulo
+- Depósito de obras: Sótano, acceso restringido
+
+NAVEGACIÓN:
+- Recorrido sugerido: Pasillos 1 → 2 → 3 (planta baja), luego segundo piso
+- Tiempo estimado por pasillo: 20-30 minutos
+- Puntos de información: Inicio de cada pasillo
+- Bancos de descanso: Cada 15 metros en pasillos principales
+
+MEDIDAS DE SEGURIDAD:
+- Cámaras de vigilancia en todos los pasillos
+- Detectores de movimiento nocturnos
+- Sistema contra incendios en cada sala
+- Personal de seguridad: 2 por planta durante horario de visita
+
+HORARIOS DE ACCESO:
+- Entrada general: 9:00 - 18:00
+- Último acceso: 17:30
+- Limpieza nocturna: 20:00 - 6:00 (acceso restringido)
+
+El museo cuenta con señalización digital interactiva en español e inglés, y mapas táctiles para personas con discapacidad visual en el vestíbulo principal."]]></ee:set-variable>
+      </ee:variables>
+    </ee:transform>
+  </flow>
+</mule>

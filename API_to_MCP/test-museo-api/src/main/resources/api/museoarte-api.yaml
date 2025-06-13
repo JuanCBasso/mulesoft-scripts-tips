@@ -1,0 +1,180 @@
+openapi: "3.0.0"
+info:
+  title: Museo de Arte API
+  description: API para acceder a información sobre obras de arte y artistas en el museo.
+  version: "1.0.0"
+paths:
+  /obras:
+    get:
+      summary: Obtener lista de obras de arte
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObraDeArte'
+      parameters:
+        - name: tema
+          in: query
+          description: Filtrar obras por tema
+          schema:
+            type: string
+      deprecated: false
+    post:
+      summary: Agregar nueva obra de arte
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObraDeArte'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObraDeArte'
+  /obras/{id}:
+    put:
+      summary: Actualizar obra de arte existente
+      parameters:
+        - name: id
+          in: path
+          description: ID de la obra de arte a actualizar
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObraDeArte'
+        '404':
+          description: No encontrado
+    delete:
+      summary: Eliminar obra de arte existente
+      parameters:
+        - name: id
+          in: path
+          description: ID de la obra de arte a eliminar
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Sin contenido
+        '404':
+          description: No encontrado
+  /artistas/{nombre}/biografia:
+    get:
+      summary: Obtener biografía del artista
+      parameters:
+        - name: nombre
+          in: path
+          description: Nombre del artista
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                    description: Nombre del artista
+                  biografia:
+                    type: string
+                    description: Biografía del artista
+        '404':
+          description: No encontrado
+    put:
+      summary: Actualizar biografía del artista
+      parameters:
+        - name: nombre
+          in: path
+          description: Nombre del artista
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biografia:
+                  type: string
+                  description: Nueva biografía del artista
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                    description: Nombre del artista
+                  biografia:
+                    type: string
+                    description: Biografía actualizada del artista
+        '404':
+          description: No encontrado
+components:
+  schemas:
+    ObraDeArte:
+      type: object
+      properties:
+        titulo:
+          type: string
+          description: Título de la obra de arte.
+        artista:
+          type: string
+          description: Nombre del artista que creó la obra.
+        año:
+          type: integer
+          description: Año de creación de la obra.
+        descripcion:
+          type: string
+          description: Descripción de la obra.
+        tema:
+          type: array
+          items:
+            type: string
+          description: Temas asociados a la obra.
+      example:
+        titulo: "La Persistencia del Tiempo"
+        artista: "Salvador Dalí"
+        año: 1931
+        descripcion: "Una obra surrealista que representa relojes derretidos en un paisaje desolado."
+        tema:
+          - Surrealismo
+          - Tiempo
+    Artista:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre del artista.
+        nacionalidad:
+          type: string
+          description: Nacionalidad del artista.
+        biografia:
+          type: string
+          description: Biografía del artista.
+      example:
+        nombre: "Salvador Dalí"
+        nacionalidad: "Español"
+        biografia: "Salvador Dalí fue un pintor surrealista español famoso por sus obras oníricas y su extravagante personalidad."

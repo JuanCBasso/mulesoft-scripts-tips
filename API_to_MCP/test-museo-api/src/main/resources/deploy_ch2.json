@@ -1,0 +1,7 @@
+{
+  "applicationName": "testmuseoapi",
+  "runtime": "4.9.6:5-java17",
+  "replicas": 1,
+  "replicaSize": "0.1",
+  "deploymentModel": "rolling"
+}

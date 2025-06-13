@@ -3,3 +3,5 @@
 Secrets-dataweave-part-2/mappings-secrets/.vscode/settings.json
 /ai-translator-policy/target
 ai-translator-policy/.vscode/settings.json
+/API_to_MCP/test-museo-api/target
+/API_to_MCP/test-museo-api/src/test/resources/embedded-dw_*

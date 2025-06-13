@@ -1,0 +1,171 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+  <sub-flow name="get-obras-from-db-impl">
+    <logger doc:name="Logger" doc:id="eafggd" message="Obteniendo Obras de DB"/>
+    <ee:transform doc:name="Transform Message" doc:id="sknvsi" >
+      <ee:message >
+        <ee:set-payload doc:name="Set payload" doc:id="rltosv" ><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "titulo": "La Persistencia de la Memoria",
+    "artista": "Salvador Dalí",
+    "año": 1931,
+    "descripcion": "Una obra surrealista que representa relojes derretidos en un paisaje desolado.",
+    "tema": [
+      "Surrealismo",
+      "Tiempo"
+    ],
+    "pasillo": 1,
+    "edificio": 1
+  },
+  {
+    "titulo": "La Noche Estrellada",
+    "artista": "Vincent van Gogh",
+    "año": 1889,
+    "descripcion": "Una representación vibrante y emotiva del cielo nocturno sobre un pequeño pueblo.",
+    "tema": [
+      "Postimpresionismo",
+      "Cielo Nocturno"
+    ],
+    "pasillo": 2,
+    "edificio": 1
+  },
+  {
+    "titulo": "El Grito",
+    "artista": "Edvard Munch",
+    "año": 1893,
+    "descripcion": "Una figura andrógina en un estado de angustia existencial en un paisaje turbulento.",
+    "tema": [
+      "Expresionismo",
+      "Angustia"
+    ],
+    "pasillo": 3,
+    "edificio": 1
+  },
+  {
+    "titulo": "Guernica",
+    "artista": "Pablo Picasso",
+    "año": 1937,
+    "descripcion": "Una poderosa representación del bombardeo de Guernica durante la Guerra Civil Española.",
+    "tema": [
+      "Cubismo",
+      "Guerra"
+    ],
+    "pasillo": 1,
+    "edificio": 1
+  },
+  {
+    "titulo": "Las Meninas",
+    "artista": "Diego Velázquez",
+    "año": 1656,
+    "descripcion": "Retrato de la infanta Margarita acompañada de sus damas de honor y otros personajes de la corte.",
+    "tema": [
+      "Barroco",
+      "Realeza"
+    ],
+    "pasillo": 2,
+    "edificio": 1
+  },
+  {
+    "titulo": "La Gioconda",
+    "artista": "Leonardo da Vinci",
+    "año": 1503,
+    "descripcion": "Retrato de una mujer con enigmática sonrisa, considerada la obra más famosa del mundo.",
+    "tema": [
+      "Renacimiento",
+      "Retrato"
+    ],
+    "pasillo": 3,
+    "edificio": 1
+  },
+  {
+    "titulo": "La Última Cena",
+    "artista": "Leonardo da Vinci",
+    "año": 1498,
+    "descripcion": "Representa el momento en que Jesús anuncia que uno de sus apóstoles lo traicionará.",
+    "tema": [
+      "Renacimiento",
+      "Religión"
+    ],
+    "pasillo": 4,
+    "edificio": 1
+  },
+  {
+    "titulo": "El Nacimiento de Venus",
+    "artista": "Sandro Botticelli",
+    "año": 1486,
+    "descripcion": "Representación de la diosa Venus emergiendo del mar sobre una concha.",
+    "tema": [
+      "Renacimiento",
+      "Mitología"
+    ],
+    "pasillo": 5,
+    "edificio": 1
+  },
+  {
+    "titulo": "Los Girasoles",
+    "artista": "Vincent van Gogh",
+    "año": 1888,
+    "descripcion": "Serie de bodegones que representan girasoles en un jarrón.",
+    "tema": [
+      "Postimpresionismo",
+      "Naturaleza"
+    ],
+    "pasillo": 1,
+    "edificio": 1
+  },
+  {
+    "titulo": "El Jardín de las Delicias",
+    "artista": "Hieronymus Bosch",
+    "año": 1500,
+    "descripcion": "Tríptico que representa el paraíso, las tentaciones terrenales y el infierno.",
+    "tema": [
+      "Renacimiento",
+      "Religión"
+    ],
+    "pasillo": 2,
+    "edificio": 1
+  },
+  {
+    "titulo": "La Creación de Adán",
+    "artista": "Michelangelo",
+    "año": 1512,
+    "descripcion": "Fresco en la Capilla Sixtina que representa a Dios dando vida a Adán.",
+    "tema": [
+      "Renacimiento",
+      "Religión"
+    ],
+    "pasillo": 3,
+    "edificio": 1
+  },
+  {
+    "titulo": "Las Señoritas de Avignon",
+    "artista": "Pablo Picasso",
+    "año": 1907,
+    "descripcion": "Obra que marca el inicio del cubismo, representando cinco figuras femeninas.",
+    "tema": [
+      "Cubismo",
+      "Figura Humana"
+    ],
+    "pasillo": 4,
+    "edificio": 1
+  },
+  {
+    "titulo": "La Gran Ola de Kanagawa",
+    "artista": "Katsushika Hokusai",
+    "año": 1830,
+    "descripcion": "Estampa japonesa que muestra una gran ola amenazando a pescadores en botes.",
+    "tema": [
+      "Ukiyo-e",
+      "Naturaleza"
+    ],
+    "pasillo": 5,
+    "edificio": 1
+  }]
+]]></ee:set-payload>
+      </ee:message>
+    </ee:transform></sub-flow>
+</mule>
